@@ -1,0 +1,116 @@
+/* ===== 全域 reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#__nuxt {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background: #05010f;
+  color: #fff;
+  font-family: -apple-system, 'PingFang TC', 'Noto Sans TC', 'Segoe UI', system-ui, sans-serif;
+  overflow: hidden;
+  /* 禁止 iOS 橡皮筋 / 雙擊縮放 */
+  overscroll-behavior: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ===== 跑馬燈滾動動畫（動態指定名稱，須全域） ===== */
+@keyframes scroll-left {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+@keyframes scroll-right {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+@keyframes scroll-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(-100%); }
+}
+@keyframes scroll-down {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(100%); }
+}
+
+/* ===== 共用：霓虹按鈕 ===== */
+.btn {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  backdrop-filter: blur(8px);
+}
+
+.btn:active {
+  transform: scale(0.96);
+}
+
+.btn.is-active {
+  border-color: #a64bff;
+  background: rgba(166, 75, 255, 0.22);
+  box-shadow: 0 0 12px rgba(166, 75, 255, 0.55);
+}
+
+/* 圓形選項（速度 / 字級 / 顏色點） */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.07);
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: all 0.15s ease;
+}
+
+.chip.is-active {
+  border-color: #2dd4bf;
+}
+
+/* 顏色點 */
+.swatch {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  flex: 0 0 auto;
+  cursor: pointer;
+}
+
+.swatch.is-active {
+  border-color: #2dd4bf;
+  box-shadow: 0 0 0 2px rgba(45, 212, 191, 0.4);
+}
+
+/* 橫向可捲動的選項列 */
+.row-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 2px;
+  scrollbar-width: none;
+}
+
+.row-scroll::-webkit-scrollbar {
+  display: none;
+}

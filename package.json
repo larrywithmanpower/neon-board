@@ -1,0 +1,22 @@
+{
+  "name": "neon-board",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev --port 3080",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview"
+  },
+  "dependencies": {
+    "nuxt": "3.21.2",
+    "@pinia/nuxt": "^0.5.5",
+    "pinia": "^2.2.6"
+  },
+  "devDependencies": {
+    "@vite-pwa/nuxt": "^0.10.6"
+  },
+  "overrides": {
+    "vite": "^6.4.0"
+  }
+}

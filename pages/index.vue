@@ -16,6 +16,13 @@ let hideTimer: ReturnType<typeof setTimeout> | null = null
 const isIOS = ref(false)
 const isStandalone = ref(false)   // 已是「加到主畫面」開啟（chrome-less）
 const canFullscreen = ref(false)  // 瀏覽器是否支援 Fullscreen API（iPhone Safari 不支援）
+const isLandscape = ref(false)
+const showRotateHint = ref(false) // iPhone 直向時提示轉橫向
+
+// iPhone 非全螢幕、又直向 → 顯示轉橫向提示（橫向 / standalone 則不需要）
+const wantRotateHint = computed(() =>
+  isIOS.value && !isStandalone.value && !canFullscreen.value && !isLandscape.value,
+)
 
 // 全螢幕（PWA / 瀏覽器）
 const isFullscreen = ref(false)
@@ -73,6 +80,16 @@ onMounted(() => {
   isStandalone.value = window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true
   canFullscreen.value = !!document.documentElement.requestFullscreen
 
+  // 方向偵測
+  const orient = window.matchMedia('(orientation: landscape)')
+  const syncOrient = () => {
+    isLandscape.value = orient.matches
+    // 直向 iPhone 第一次進來給轉橫向提示
+    showRotateHint.value = wantRotateHint.value
+  }
+  syncOrient()
+  orient.addEventListener('change', syncOrient)
+
   document.addEventListener('fullscreenchange', () => {
     isFullscreen.value = !!document.fullscreenElement
   })
@@ -128,6 +145,14 @@ onMounted(() => {
       <SettingsPanel v-if="panelOpen" @close="panelOpen = false" />
     </transition>
 
+    <!-- iPhone 轉橫向提示（直向時出現，橫向自動消失） -->
+    <transition name="fade">
+      <div v-if="showRotateHint && !panelOpen" class="rotate-hint" @click="showRotateHint = false">
+        <span class="rotate-ico">↻</span>
+        <span>轉成橫向更像看板<br><small>iPhone 點畫面可隱藏按鈕</small></span>
+      </div>
+    </transition>
+
     <!-- 提示 -->
     <transition name="fade">
       <div v-if="toast" class="toast">{{ toast }}</div>
@@ -138,7 +163,11 @@ onMounted(() => {
 <style scoped>
 .app {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh; /* iOS 可視高度，會覆蓋上一行 */
   overflow: hidden;
 }
 
@@ -177,11 +206,47 @@ onMounted(() => {
   backdrop-filter: blur(8px);
 }
 
+/* iPhone 轉橫向提示 */
+.rotate-hint {
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom) + 24px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.72);
+  border: 1px solid rgba(166, 75, 255, 0.45);
+  border-radius: 16px;
+  padding: 12px 18px;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
+  z-index: 25;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 16px rgba(166, 75, 255, 0.3);
+}
+
+.rotate-hint small {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+}
+
+.rotate-ico {
+  font-size: 24px;
+  animation: rotate-wobble 1.6s ease-in-out infinite;
+}
+
+@keyframes rotate-wobble {
+  0%, 100% { transform: rotate(-12deg); }
+  50% { transform: rotate(78deg); }
+}
+
 /* 加到主畫面教學浮層 */
 .hint-mask {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.88);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -191,11 +256,11 @@ onMounted(() => {
 
 .hint-card {
   max-width: 360px;
-  background: rgba(18, 12, 32, 0.96);
-  border: 1px solid rgba(166, 75, 255, 0.4);
+  background: #120c20;
+  border: 1px solid rgba(166, 75, 255, 0.5);
   border-radius: 18px;
   padding: 24px;
-  box-shadow: 0 0 30px rgba(166, 75, 255, 0.35);
+  box-shadow: 0 0 30px rgba(166, 75, 255, 0.4);
 }
 
 .hint-card h3 {

@@ -12,6 +12,14 @@ body,
   width: 100%;
 }
 
+/* iOS 動態工具列：用 dvh 貼合實際可視高度（避免內容被工具列裁切） */
+@supports (height: 100dvh) {
+  body,
+  #__nuxt {
+    height: 100dvh;
+  }
+}
+
 body {
   background: #05010f;
   color: #fff;
